@@ -8,12 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        initializeRetrofit();
+
         mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mAdapter = new MoviesAdapter(this);
@@ -49,6 +51,44 @@ public class MainActivity extends AppCompatActivity {
         }
         mAdapter.setMovieList(movies);
 
+        getPopularMovies();
+
+//        RestAdapter restAdapter = new RestAdapter.Builder()
+//                .setEndpoint("http://api.themoviedb.org/3")
+//                .setRequestInterceptor(new RequestInterceptor() {
+//                    @Override
+//                    public void intercept(RequestFacade request) {
+//                        request.addEncodedQueryParam("api_key", "c204f3fc7ec8371943f02d948eb1b787");
+//                    }
+//                })
+//                .setLogLevel(RestAdapter.LogLevel.FULL)
+//                .build();
+//        MoviesApiService service = restAdapter.create(MoviesApiService.class);
+//        service.getPopularMovies(new Callback<Movie.MovieResult>() {
+//            @Override
+//            public void success(Movie.MovieResult movieResult, Response response) {
+//                mAdapter.setMovieList(movieResult.getResults());
+//            }
+//
+//            @Override
+//            public void failure(RetrofitError error) {
+//                error.printStackTrace();
+//            }
+//        });
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+    }
+
+
+    public void getPopularMovies(){
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://api.themoviedb.org/3")
                 .setRequestInterceptor(new RequestInterceptor() {
@@ -66,40 +106,32 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.setMovieList(movieResult.getResults());
             }
 
+
             @Override
             public void failure(RetrofitError error) {
                 error.printStackTrace();
             }
         });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
     }
 
-    public void initializeRetrofit(){
+    public void getTopRatedMovies(){
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://api.themoviedb.org/3")
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestFacade request) {
-                        request.addEncodedQueryParam("api_key", "204f3fc7ec8371943f02d948eb1b787");
+                        request.addEncodedQueryParam("api_key", "c204f3fc7ec8371943f02d948eb1b787");
                     }
                 })
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
         MoviesApiService service = restAdapter.create(MoviesApiService.class);
-        service.getPopularMovies(new Callback<Movie.MovieResult>() {
+        service.getTopRatedMovies(new Callback<Movie.MovieResult>() {
             @Override
             public void success(Movie.MovieResult movieResult, Response response) {
                 mAdapter.setMovieList(movieResult.getResults());
             }
+
 
             @Override
             public void failure(RetrofitError error) {
@@ -133,16 +165,22 @@ public class MainActivity extends AppCompatActivity {
 
     public static class MovieViewHolder extends RecyclerView.ViewHolder
     {
+        public TextView tJudul;
         public ImageView imageView;
+
+
         public MovieViewHolder(View itemView)
         {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            tJudul = (TextView) itemView.findViewById(R.id.textJudul);
+
         }
     }
 
     public static class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder>
     {
+        
         private List<Movie> mMovieList;
         private LayoutInflater mInflater;
         private Context mContext;
@@ -166,12 +204,16 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(MovieViewHolder holder, int position)
         {
             Movie movie = mMovieList.get(position);
+            holder.tJudul.setText(movie.getTitle());
 
             // This is how we use Picasso to load images from the internet.
             Picasso.with(mContext)
                     .load(movie.getPoster())
                     .placeholder(R.color.colorAccent)
                     .into(holder.imageView);
+
+
+
         }
 
         @Override
@@ -187,5 +229,6 @@ public class MainActivity extends AppCompatActivity {
             // The adapter needs to know that the data has changed. If we don't call this, app will crash.
             notifyDataSetChanged();
         }
+
     }
 }
