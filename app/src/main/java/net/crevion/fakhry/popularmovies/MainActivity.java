@@ -1,7 +1,9 @@
 package net.crevion.fakhry.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -193,10 +195,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        public MovieViewHolder onCreateViewHolder(ViewGroup parent,final int viewType)
         {
             View view = mInflater.inflate(R.layout.row_movie, parent, false);
-            MovieViewHolder viewHolder = new MovieViewHolder(view);
+            final MovieViewHolder viewHolder = new MovieViewHolder(view);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = viewHolder.getAdapterPosition();
+                    Intent intent = new Intent(mContext, DetailMovieActivity.class);
+                    intent.putExtra(DetailMovieActivity.EXTRA_MOVIE, mMovieList.get(pos));
+                    mContext.startActivity(intent);
+
+                }
+            });
+
             return viewHolder;
         }
 
