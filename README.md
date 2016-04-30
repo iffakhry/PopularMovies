@@ -1,2 +1,2 @@
 # PopularMovies
-Popular Movies app is a project from udacity. This project using themoviedb API
+Popular Movies app is a project from udacity. This project use themoviedb API
